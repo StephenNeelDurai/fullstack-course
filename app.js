@@ -18,7 +18,7 @@ const users = [
   //   { id: 5, name: "Manasiga" },
   //   { id: 6, name: "Mega" },
 ];
-// GET / url
+// GET / Render the home page
 server.get("/", (req, res) => {
   console.log("\n GET /");
   console.log("\n dirname", __dirname);
