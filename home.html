@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Futurestack</title>
+</head>
+<!-- v1.1 -->
+<!-- v7.1 -->
+<style>
+    /* .futurestack: {
+        color: "blue";
+        margin: "10px";
+        padding: "5px";
+        border: "2px dotted black"
+    }
+    #el-1 {
+
+    } */
+    h1 {
+        color: "blue" !important;
+        margin: "10px" !important;
+        padding: "5px" !important;
+        border: "2px dotted black" !important
+    }
+</style>
+
+<body style="margin:0px;padding:0px;">
+    <!-- Section 1 -->
+    <div style="display: flex;">
+        <h1 id="el-1" class="futurestack">Hello Team. Welcome to the programming world
+        </h1>
+    </div>
+    <p>We are learning fullstack development. Keep rocking.</p>
+    <button onclick="fetchHtmlFromUrl()">Get data</button>
+    <div id="profiles" style="margin-top:30px">
+
+    </div>
+</body>
+<script>
+    async function fetchHtmlFromUrl() {
+        const url = "http://localhost:4000/profile"
+        try {
+            const response = await fetch(url);
+            // Check if the request was successful (status 200-299)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const htmlContent = await response.json();
+            console.log('success', htmlContent);
+            console.log(htmlContent);
+            const el = document.getElementById('profiles')
+            el.innerHTML = JSON.stringify(htmlContent);
+            return htmlContent;
+        } catch (error) {
+            console.error('Error fetching HTML:', error);
+        }
+    }
+
+    // fetchHtmlFromUrl('http://localhost:4000/profile');
+</script>
+
+
+</html>
+<!-- Element -->
+<!-- Margin -->
+<!-- Padding -->
+<!-- Parsing -->
+<!-- File not found -->
+<!-- Developer console -->
+
+<!-- 4 ways -->
+<!-- margin: 5px 10px 5px 10px -->
+<!-- margin: t r b l -->
+
+<!-- margin-right: 10px -->
+<!-- margin-left: 10px -->
+<!-- margin-top: 10px -->
+<!-- margin-bottom: 10px -->
+
+<!-- x, y -->
+<!-- margin: 5px 10px-->
+<!-- margin: t,b r,l -->
+
+<!-- all -->
+<!-- margin: 5px-->
+<!-- margin: t -->
+
+<!-- border-radius -->
+
+<!-- 30px 100px -->
+<!-- 30px 500px -->
+
+<!-- | Pencil |    |  Bag  | -->
