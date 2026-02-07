@@ -10,7 +10,7 @@ server.listen(PORT, () => {
 });
 
 const users = [
-  // Array
+  // Array of users
   { id: 1, name: "Merciyal" },
   { id: 2, name: "Inthu" },
   { id: 3, name: "Hathija" },
