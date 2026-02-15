@@ -19,7 +19,7 @@ const arrayIteam = [
   },
   {
     id: 2,
-    name: "Pups",
+    name: "coffee",
     price: 15,
   },
 ];
@@ -73,3 +73,11 @@ const cart = [
 // cart
 const order = createOrder(cart); //Inthu
 console.log(order);
+console .log("total",order.total);
+module.exports = {
+  items,
+  arrayIteam,
+  createOrder,
+  createOrderId
+};
+
