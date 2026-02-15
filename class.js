@@ -19,7 +19,7 @@
 API
 
 Method
-1.GET - Getting data from server // manasiga.com/logn?username=123.com&password=123
+//1.GET - Getting data from server // manasiga.com/logn?username=123.com&password=123
 2.POST - Create Login -> Response -> Token (Create)
 3.PUT - Update
 4.DELETE - Delete
