@@ -8,7 +8,7 @@ server.use(express.json());
 server.listen(PORT, () => {
   console.log("Server Running on PORT", PORT);
 });
-
+//shalin ,10 minutes ago done
 const users = [
   // Array of users
   { id: 1, name: "Merciyal" },
@@ -18,7 +18,7 @@ const users = [
   //   { id: 5, name: "Manasiga" },
   //   { id: 6, name: "Mega" },
 ];
-// GET / Render the home page
+// GET / Render to the home page 2
 server.get("/", (req, res) => {
   console.log("\n GET /");
   console.log("\n dirname", __dirname);
