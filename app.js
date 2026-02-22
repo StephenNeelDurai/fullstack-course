@@ -11,10 +11,10 @@ server.listen(PORT, () => {
 //shalin ,10 minutes ago done
 const users = [
   // Array of users
-  { id: 1, name: "Merciyal" },
-  { id: 2, name: "Inthu" },
-  { id: 3, name: "Hathija" },
-  { id: 4, name: "Shalin" },
+  // { id: 1, name: "Merciyal" },
+  // { id: 2, name: "Inthu" },
+  // { id: 3, name: "Hathija" },
+  // { id: 4, name: "Shalin" },
   //   { id: 5, name: "Manasiga" },
   //   { id: 6, name: "Mega" },
 ];
@@ -39,4 +39,46 @@ server.post("/profile", (req, res) => {
   const newUser = { id: req.body.id, name: req.body.name };
   users.push(newUser); // Array.push
   res.send(users);
+});
+
+// In memory
+
+const db = {
+  users: {
+    findAll: function () {
+      return users;
+    },
+    findById: function (id) {
+      return users.find((id) => user.id === id);
+    },
+    create: function (user) {
+      users.push(user);
+    },
+    update: function (id, name) {
+      users.find((user) => {
+        if (user.id === id) {
+          user.name = name;
+        }
+        return users;
+      });
+    },
+  },
+};
+
+server.get("/users", (req, res) => {
+  console.log("\n Get users");
+  const result = db.users.findAll(); // find all (find all recoreds from user)
+  res.send({
+    staus: "success",
+    data: result,
+  });
+});
+
+server.post("/register", (req, res) => {
+  const user = req.body.user; // id, name
+  console.log("\n Register user", req.body.user); // Create new user
+  db.users.create(user);
+  res.send({
+    staus: "success",
+  });
 });
