@@ -4,6 +4,7 @@
 <head>
     <title>Futurestack</title>
 </head>
+
 <!-- v1.1 -->
 <!-- v7.1 -->
 <style>
@@ -32,11 +33,73 @@
     </div>
     <p>We are learning fullstack development. Keep rocking.</p>
     <button onclick="fetchHtmlFromUrl()">Get data</button>
-    <div id="profiles" style="margin-top:30px">
+    <div id="profiles" style="margin-top:30px"></div>
+    <div id="chat" style="margin-top:30px;width: 500px; padding:50px;">
+
+        <ul id="messages" style="margin-top:30px">
+        </ul>
+        <p>Group 1</p>
+        <p id="typing" style="margin-top:30px">
+        </p>
+        <input style="margin-top:30px" id="input" placeholder="Type something..." />
+        <button style="margin-top:30px" onclick="send()">Send</button>
 
     </div>
 </body>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
+
+    const socket = io(); // connect to server
+
+    const messages = document.getElementById('messages');
+    const typingText = document.getElementById('typing');
+
+    socket.on('mygroup1', (data) => {
+        const item = document.createElement('li');
+        item.textContent = data.message;
+        messages.appendChild(item);
+    });
+    socket.on('someonetyping', (name) => {
+        console.log('\n Typing...')
+        typingText.textContent = name + ' is typing...'
+    });
+    socket.on('typingstopped', (msg) => {
+        console.log('\n Typing stopped');
+        typingText.textContent = '';
+    });
+
+    const input = document.getElementById('input');
+
+
+    function send() {
+        if (input.value) {
+            console.log("\n Sending message", input.value)
+            socket.emit('mygroup1', { message: input.value, eventType: 'message', name: 'Shalin' }); // Emit custom event
+            input.value = '';
+        }
+    }
+
+    let timer;
+    const waitTime = 500;
+
+    // The function to execute when the user stops typing
+    const doneTyping = () => {
+        socket.emit('typingstopped'); // Emit custom event
+    };
+
+    // Listen for the 'keyup' event on the input field
+    input.addEventListener('keyup', (e) => {
+        // Clear the previous timer to prevent the old action from executing
+        clearTimeout(timer);
+
+        // Update status while typing
+        socket.emit('someonetyping', 'Shalin'); // Emit custom event
+
+        // Set a new timer to call the 'doneTyping' function after the specified waitTime
+        timer = setTimeout(doneTyping, waitTime);
+    });
+
+
     async function fetchHtmlFromUrl() {
         const url = "http://localhost:4000/profile"
         try {
