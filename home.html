@@ -34,36 +34,78 @@
     <p>We are learning fullstack development. Keep rocking.</p>
     <button onclick="fetchHtmlFromUrl()">Get data</button>
     <div id="profiles" style="margin-top:30px"></div>
-    <div id="chat" style="margin-top:30px;width: 500px; padding:50px;">
+    <p id="typing" style="margin-top:30px"></p>
 
-        <ul id="messages" style="margin-top:30px">
-        </ul>
-        <p>Group 1</p>
+    <div id="login" style="margin-top:30px;width: 500px; padding:50px;">
+
+        <p>Please enter your name to login</p>
         <p id="typing" style="margin-top:30px">
         </p>
+        <input style="margin-top:30px" id="username" placeholder="Type your name" />
+        <button style="margin-top:30px" onclick="saveUser()">Save</button>
+
+    </div>
+    <div id="chat" style="margin-top:30px;width: 500px; padding:50px;display: none;">
+        <div id="messages" style="margin-top:30px">
+        </div>
+        <p>Fullstack group <span id="currentUser">(-)</span></p>
         <input style="margin-top:30px" id="input" placeholder="Type something..." />
         <button style="margin-top:30px" onclick="send()">Send</button>
 
     </div>
+
 </body>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
 
     const socket = io(); // connect to server
+    let username = null;
+
+    function saveUser() {
+        const userNameEle = document.getElementById('username'); // gert input user name
+        if (!userNameEle.value) {
+            alert('Please enter your name')
+            return;
+        };
+
+        username = userNameEle.value;
+
+        const showUserNameElem = document.getElementById('currentUser'); // show user name
+        showUserNameElem.innerHTML = username;
+
+        const loginEle = document.getElementById('login');
+        loginEle.style.display = 'none';
+
+        const chatEle = document.getElementById('chat');
+        chatEle.style.display = 'block';
+
+    }
 
     const messages = document.getElementById('messages');
-    const typingText = document.getElementById('typing');
 
     socket.on('mygroup1', (data) => {
-        const item = document.createElement('li');
-        item.textContent = data.message;
-        messages.appendChild(item);
+        const messageDiv = document.createElement('div');
+        messageDiv.style.width = '250px';
+        messageDiv.style.display = 'flex';
+        messageDiv.style.background = 'black';
+        messageDiv.style.justifyContent = data.name === username ? 'right' : 'left';
+        const message = document.createElement('p');
+        message.style.color = 'white';
+        message.textContent = `${data.name === username ? 'Me' : data.name} - ${data.message}`;
+        messageDiv.appendChild(message);
+        
+        messages.appendChild(messageDiv);
     });
     socket.on('someonetyping', (name) => {
-        console.log('\n Typing...')
+        const typingText = document.getElementById('typing');
+
+        if (name === username) return; // return here the code below will not execute
+        console.log('\n Typing...', name);
+        console.log('\n typingText', typingText.textContent);
         typingText.textContent = name + ' is typing...'
     });
     socket.on('typingstopped', (msg) => {
+        const typingText = document.getElementById('typing');
         console.log('\n Typing stopped');
         typingText.textContent = '';
     });
@@ -74,7 +116,7 @@
     function send() {
         if (input.value) {
             console.log("\n Sending message", input.value)
-            socket.emit('mygroup1', { message: input.value, eventType: 'message', name: 'Shalin' }); // Emit custom event
+            socket.emit('mygroup1', { message: input.value, eventType: 'message', name: username }); // Emit custom event
             input.value = '';
         }
     }
@@ -93,7 +135,7 @@
         clearTimeout(timer);
 
         // Update status while typing
-        socket.emit('someonetyping', 'Shalin'); // Emit custom event
+        socket.emit('someonetyping', username); // Emit custom event
 
         // Set a new timer to call the 'doneTyping' function after the specified waitTime
         timer = setTimeout(doneTyping, waitTime);
