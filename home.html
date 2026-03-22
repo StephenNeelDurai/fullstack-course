@@ -31,26 +31,33 @@
         <h1 id="el-1" class="futurestack">Hello Team. Welcome to the programming world
         </h1>
     </div>
-    <p>We are learning fullstack development. Keep rocking.</p>
-    <button onclick="fetchHtmlFromUrl()">Get data</button>
+    <!-- <p>We are learning fullstack development. Keep rocking.</p>
+    <button onclick="fetchHtmlFromUrl()">Get data</button> -->
     <div id="profiles" style="margin-top:30px"></div>
     <p id="typing" style="margin-top:30px"></p>
 
-    <div id="login" style="margin-top:30px;width: 500px; padding:50px;">
-
+    <div id="login" style="margin-top:10px;width: 500px; padding:50px;">
         <p>Please enter your name to login</p>
         <p id="typing" style="margin-top:30px">
         </p>
         <input style="margin-top:30px" id="username" placeholder="Type your name" />
         <button style="margin-top:30px" onclick="saveUser()">Save</button>
-
     </div>
     <div id="chat" style="margin-top:30px;width: 500px; padding:50px;display: none;">
-        <div id="messages" style="margin-top:30px">
+        <div id="message-container"
+            style="margin-top:30px;
+        width: 300px;height:500px;border:20px solid;border-radius: 10px 10px 0 0;display: flex;flex-direction: column;">
+            <p style="background-color: #232626;margin:0;padding:15px;color:white">Future stack </p>
+
+            <div id="messages"
+                style="overflow: scroll;flex:1;padding:10px;background-image: url('https://static.vecteezy.com/system/resources/previews/007/356/671/non_2x/school-supplies-seamless-pattern-free-vector.jpg');background-repeat: no-repeat;background-size: cover;">
+            </div>
+            <div style="display: flex;background-color: rgb(168, 166, 166);gap:4px;height: 35px;padding: 5px 2px">
+                <input style="width:100%" id="input" placeholder="Type something..." />
+                <button style="width:40px;border-radius: 25px;border:none;color:white;background-color: green;"
+                    onclick="send()">></button>
+            </div>
         </div>
-        <p>Fullstack group <span id="currentUser">(-)</span></p>
-        <input style="margin-top:30px" id="input" placeholder="Type something..." />
-        <button style="margin-top:30px" onclick="send()">Send</button>
 
     </div>
 
@@ -70,9 +77,6 @@
 
         username = userNameEle.value;
 
-        const showUserNameElem = document.getElementById('currentUser'); // show user name
-        showUserNameElem.innerHTML = username;
-
         const loginEle = document.getElementById('login');
         loginEle.style.display = 'none';
 
@@ -84,17 +88,49 @@
     const messages = document.getElementById('messages');
 
     socket.on('mygroup1', (data) => {
-        const messageDiv = document.createElement('div');
-        messageDiv.style.width = '250px';
-        messageDiv.style.display = 'flex';
-        messageDiv.style.background = 'black';
-        messageDiv.style.justifyContent = data.name === username ? 'right' : 'left';
+        const messageContainer = document.createElement('div');
+        messageContainer.style.display = 'flex';
+        messageContainer.style.marginTop = '5px';
+        messageContainer.style.padding = '5px';
+        messageContainer.style.borderRadius = '5px';
+        messageContainer.style.justifyContent = 'right';
+        const messageSection = document.createElement('div');
+        const senderName = document.createElement('span');
         const message = document.createElement('p');
-        message.style.color = 'white';
-        message.textContent = `${data.name === username ? 'Me' : data.name} - ${data.message}`;
-        messageDiv.appendChild(message);
-        
-        messages.appendChild(messageDiv);
+        const messageTime = document.createElement('span');
+        message.textContent = data.message;
+        message.style.margin = 0;
+        message.style.overflowBreak = 'break-word';
+        message.style.wordBreak = 'break-word';
+        messageTime.textContent = getTime()
+        messageTime.style.float = 'right';
+        messageTime.style.fontSize = '12px';
+        messageTime.style.margin = '10px 0';
+        messageTime.style.color = '#656262';
+        messageTime.style.margin = '0 0 5px 0';
+        messageSection.style.padding = '0 5px 0 5px';
+        messageSection.style.color = 'white';
+        messageSection.style.borderRadius = '7px 7px 0 7px';
+        messageSection.style.padding = '8px 4px 0 4px';
+        messageSection.style.width = '150px';
+        messageSection.style.background = '#21C063';
+        if (data.name !== username) {
+            messageTime.style.color = '#a8a8a8';
+            message.style.margin = '14px 0 0 0';
+            messageContainer.style.justifyContent = 'left';
+            messageSection.style.background = '#232626';
+            messageSection.style.borderRadius = '7px 7px 7px 0';
+            senderName.textContent = data.name;
+            senderName.style.color = '#a791ff';
+            senderName.style.float = 'left';
+            senderName.style.fontSize = '12px';
+            messageSection.appendChild(senderName);
+        }
+        messageSection.appendChild(message);
+        messageSection.appendChild(messageTime);
+        messageContainer.appendChild(messageSection);
+
+        messages.appendChild(messageContainer);
     });
     socket.on('someonetyping', (name) => {
         const typingText = document.getElementById('typing');
@@ -161,6 +197,17 @@
         }
     }
 
+    function getTime() {
+        const dateObject = new Date(Date.now());
+        const hrs = dateObject.getHours();
+        const hours = String(hrs).padStart(2, '0');
+        const minutes = String(dateObject.getMinutes()).padStart(2, '0');
+        const t = hrs > 12 ? 'PM' : 'AM';
+
+        const formattedTime = `${hours}:${minutes} ${t}`;
+        console.log(formattedTime); // Example output: "09:30:51"
+        return formattedTime;
+    }
     // fetchHtmlFromUrl('http://localhost:4000/profile');
 </script>
 
