@@ -8,40 +8,53 @@
 <!-- v1.1 -->
 <!-- v7.1 -->
 <style>
-    /* .futurestack: {
-        color: "blue";
-        margin: "10px";
-        padding: "5px";
-        border: "2px dotted black"
-    }
-    #el-1 {
-
-    } */
     h1 {
         color: "blue" !important;
         margin: "10px" !important;
         padding: "5px" !important;
         border: "2px dotted black" !important
     }
+
+    .typing-animation-container {
+        position: absolute;
+        bottom: 0;
+        margin-bottom: 5px;
+        display: none;
+        align-items: center;
+    }
+
+    .typing-user-name {
+        margin: 0 10px 0 0;
+        color: #ffff;
+    }
+
+    .typing-animation {
+        width: 120px;
+        height: 10px;
+        -webkit-mask: radial-gradient(circle closest-side, #000 94%, #0000) left/20% 100%;
+        background: linear-gradient(#279600 0 0) left/0% 100% no-repeat #ddd;
+        animation: l17 2s infinite steps(6);
+    }
+
+    @keyframes l17 {
+        100% {
+            background-size: 120% 100%
+        }
+    }
 </style>
 
-<body style="margin:0px;padding:0px;">
+<body style="margin:0px;padding:0px;display: flex;flex-direction: column;align-items: center;">
     <!-- Section 1 -->
     <div style="display: flex;">
         <h1 id="el-1" class="futurestack">Hello Team. Welcome to the programming world
         </h1>
     </div>
-    <!-- <p>We are learning fullstack development. Keep rocking.</p>
-    <button onclick="fetchHtmlFromUrl()">Get data</button> -->
-    <div id="profiles" style="margin-top:30px"></div>
-    <p id="typing" style="margin-top:30px"></p>
 
-    <div id="login" style="margin-top:10px;width: 500px; padding:50px;">
+    <div id="login"
+        style="margin-top:10px;width: 500px; padding:50px;display: flex;flex-direction: column;align-items: center;">
         <p>Please enter your name to login</p>
-        <p id="typing" style="margin-top:30px">
-        </p>
         <input style="margin-top:30px" id="username" placeholder="Type your name" />
-        <button style="margin-top:30px" onclick="saveUser()">Save</button>
+        <button style="margin-top:30px" onclick="login()">Login</button>
     </div>
     <div id="chat" style="margin-top:30px;width: 500px; padding:50px;display: none;">
         <div id="message-container"
@@ -50,7 +63,7 @@
             <p style="background-color: #232626;margin:0;padding:15px;color:white">Future stack </p>
 
             <div id="messages"
-                style="overflow: scroll;flex:1;padding:10px;background-image: url('https://static.vecteezy.com/system/resources/previews/007/356/671/non_2x/school-supplies-seamless-pattern-free-vector.jpg');background-repeat: no-repeat;background-size: cover;">
+                style="position: relative;overflow: scroll;flex:1;padding:10px;background-image: url('https://static.vecteezy.com/system/resources/previews/007/356/671/non_2x/school-supplies-seamless-pattern-free-vector.jpg');background-repeat: no-repeat;background-size: cover;">
             </div>
             <div style="display: flex;background-color: rgb(168, 166, 166);gap:4px;height: 35px;padding: 5px 2px">
                 <input style="width:100%" id="input" placeholder="Type something..." />
@@ -67,8 +80,11 @@
 
     const socket = io(); // connect to server
     let username = null;
+    const senderNameColor = {};
+    const senderNameColors = ['#a791ff', '#ff91b0', '#ffe991', '#91fff0'];
+    const messages = document.getElementById('messages');
 
-    function saveUser() {
+    function login() {
         const userNameEle = document.getElementById('username'); // gert input user name
         if (!userNameEle.value) {
             alert('Please enter your name')
@@ -81,66 +97,123 @@
         loginEle.style.display = 'none';
 
         const chatEle = document.getElementById('chat');
-        chatEle.style.display = 'block';
+        chatEle.style.display = 'flex';
+        chatEle.style.justifyContent = 'center';
+
+
+        const typingAnimationContainer = document.createElement('div');
+        typingAnimationContainer.classList.add('typing-animation-container');
+        typingAnimationContainer.id = 'typing-animation-container';
+
+        const typingUserNameElement = document.createElement('p');
+        typingUserNameElement.classList.add('typing-user-name');
+        typingUserNameElement.id = 'typing-user-name';
+
+        const typingAnimation = document.createElement('div');
+        typingAnimation.classList.add('typing-animation');
+
+
+        typingAnimationContainer.appendChild(typingUserNameElement);
+        typingAnimationContainer.appendChild(typingAnimation);
+
+        messages.appendChild(typingAnimationContainer);
 
     }
 
-    const messages = document.getElementById('messages');
+
+    function createMessageContainer() {
+        const messageContainerElement = document.createElement('div');
+        messageContainerElement.style.display = 'flex';
+        messageContainerElement.style.marginTop = '5px';
+        messageContainerElement.style.padding = '5px';
+        messageContainerElement.style.borderRadius = '5px';
+        messageContainerElement.style.justifyContent = 'right';
+        return messageContainerElement;
+    }
+
+    function createMessageSection() {
+        const messageSectionElement = document.createElement('div');
+        messageSectionElement.style.padding = '0 5px 0 5px';
+        messageSectionElement.style.color = 'white';
+        messageSectionElement.style.borderRadius = '7px 7px 0 7px';
+        messageSectionElement.style.padding = '6px 4px 0 4px';
+        messageSectionElement.style.width = '150px';
+        messageSectionElement.style.background = '#21C063';
+        return messageSectionElement;
+    }
+
+    function createMessage(data) {
+        const messageElement = document.createElement('p');
+        messageElement.textContent = data.message;
+        messageElement.style.margin = 0;
+        messageElement.style.overflowBreak = 'break-word';
+        messageElement.style.wordBreak = 'break-word';
+        return messageElement;
+    }
+
+    function createMessageTime() {
+        const messageTimeElement = document.createElement('span');
+        messageTimeElement.textContent = getTime()
+        messageTimeElement.style.float = 'right';
+        messageTimeElement.style.fontSize = '12px';
+        messageTimeElement.style.margin = '10px 0';
+        messageTimeElement.style.color = '#656262';
+        messageTimeElement.style.margin = '0 0 5px 0';
+        return messageTimeElement;
+    }
+
+    function updateMessageElements(data, messageContainer, messageSection, message, messageTime) {
+        const senderName = document.createElement('span');
+        messageTime.style.color = '#a8a8a8';
+        message.style.margin = '16px 0 0 0';
+        messageContainer.style.justifyContent = 'left';
+        messageSection.style.background = '#232626';
+        messageSection.style.borderRadius = '7px 7px 7px 0';
+        senderName.textContent = data.name;
+        senderName.style.float = 'left';
+        senderName.style.fontSize = '14px';
+        setSenderNameColor(senderName);
+        messageSection.appendChild(senderName);
+    }
+
+    function setSenderNameColor(senderName) {
+        let color = senderNameColor[senderName] ||
+            senderNameColors[Math.floor(Math.random() * senderNameColors.length)];
+        senderName.style.color = color;
+    }
 
     socket.on('mygroup1', (data) => {
-        const messageContainer = document.createElement('div');
-        messageContainer.style.display = 'flex';
-        messageContainer.style.marginTop = '5px';
-        messageContainer.style.padding = '5px';
-        messageContainer.style.borderRadius = '5px';
-        messageContainer.style.justifyContent = 'right';
-        const messageSection = document.createElement('div');
-        const senderName = document.createElement('span');
-        const message = document.createElement('p');
-        const messageTime = document.createElement('span');
-        message.textContent = data.message;
-        message.style.margin = 0;
-        message.style.overflowBreak = 'break-word';
-        message.style.wordBreak = 'break-word';
-        messageTime.textContent = getTime()
-        messageTime.style.float = 'right';
-        messageTime.style.fontSize = '12px';
-        messageTime.style.margin = '10px 0';
-        messageTime.style.color = '#656262';
-        messageTime.style.margin = '0 0 5px 0';
-        messageSection.style.padding = '0 5px 0 5px';
-        messageSection.style.color = 'white';
-        messageSection.style.borderRadius = '7px 7px 0 7px';
-        messageSection.style.padding = '8px 4px 0 4px';
-        messageSection.style.width = '150px';
-        messageSection.style.background = '#21C063';
+        const messageContainer = createMessageContainer();
+        const messageSection = createMessageSection();
+        const message = createMessage(data);
+        const messageTime = createMessageTime();
         if (data.name !== username) {
-            messageTime.style.color = '#a8a8a8';
-            message.style.margin = '14px 0 0 0';
-            messageContainer.style.justifyContent = 'left';
-            messageSection.style.background = '#232626';
-            messageSection.style.borderRadius = '7px 7px 7px 0';
-            senderName.textContent = data.name;
-            senderName.style.color = '#a791ff';
-            senderName.style.float = 'left';
-            senderName.style.fontSize = '12px';
-            messageSection.appendChild(senderName);
+            updateMessageElements(data, messageContainer, messageSection, message, messageTime);
         }
+        // Create message section
         messageSection.appendChild(message);
         messageSection.appendChild(messageTime);
         messageContainer.appendChild(messageSection);
-
+        // Render message section in to the app
         messages.appendChild(messageContainer);
     });
-    socket.on('someonetyping', (name) => {
-        const typingText = document.getElementById('typing');
 
+    socket.on('someonetyping', (name) => {
         if (name === username) return; // return here the code below will not execute
-        console.log('\n Typing...', name);
-        console.log('\n typingText', typingText.textContent);
-        typingText.textContent = name + ' is typing...'
+        const typingAnimationContainer = document.getElementById('typing-animation-container');
+        typingAnimationContainer.style.display = 'flex';
+
+        const typingUserNameElement = document.getElementById('typing-user-name');
+        typingUserNameElement.textContent = name;
+        typingUserNameElement.style.color = senderNameColors[0];
     });
+
     socket.on('typingstopped', (msg) => {
+        const typingAnimationContainer = document.getElementById('typing-animation-container');
+        typingAnimationContainer.style.display = 'none';
+        const typingUserNameElement = document.getElementById('typing-user-name');
+        typingUserNameElement.textContent = '';
+
         const typingText = document.getElementById('typing');
         console.log('\n Typing stopped');
         typingText.textContent = '';
