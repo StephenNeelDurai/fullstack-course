@@ -12,9 +12,18 @@ const io = new Server(server, {
   },
 });
 
+const onlineUsers = {};
+
 io.on("connection", (socket) => {
   //
   console.log("New user connected...👦🏻", socket.id);
+  if (onlineUsers[socket.id]) {
+    onlineUsers[socket.id].isOnline = true;
+  } else {
+    onlineUsers[socket.id] = { name: null, isOnline: false };
+  }
+  console.log("\n send update 0", onlineUsers);
+  socket.emit("onlineUpdate", onlineUsers);
 
   socket.on("mygroup1", (data) => {
     // 🔌
@@ -34,9 +43,23 @@ io.on("connection", (socket) => {
     // db store
     io.emit("typingstopped");
   });
+  socket.on("login", (name) => {
+    console.log("Loggedin id", socket.id);
+    console.log("Loggedin name", name);
+    if (onlineUsers[socket.id]) {
+      onlineUsers[socket.id].name = name;
+      onlineUsers[socket.id].isOnline = true;
+    }
+    console.log("\n send update 1", onlineUsers);
+    socket.emit("onlineUpdate", onlineUsers);
+  });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected");
+    console.log("User disconnected", socket.id);
+    console.log("Disconnected user name", onlineUsers[socket.id]);
+    onlineUsers[socket.id].isOnline = false;
+    console.log("\n send update 2", onlineUsers);
+    socket.emit("onlineUpdate", onlineUsers);
   });
 });
 

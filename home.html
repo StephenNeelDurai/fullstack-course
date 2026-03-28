@@ -50,6 +50,11 @@
         </h1>
     </div>
 
+    <div id="users">
+        <h3>Users</h3>
+
+    </div>
+
     <div id="login"
         style="margin-top:10px;width: 500px; padding:50px;display: flex;flex-direction: column;align-items: center;">
         <p>Please enter your name to login</p>
@@ -117,6 +122,9 @@
         typingAnimationContainer.appendChild(typingAnimation);
 
         messages.appendChild(typingAnimationContainer);
+
+
+        socket.emit('login', username);
 
     }
 
@@ -219,6 +227,19 @@
         typingText.textContent = '';
     });
 
+    socket.on('onlineUpdate', (data) => {
+        console.log('\n onlineUpdate', data);
+        const userContainer = document.getElementById('users');
+        userContainer.innerHTML = null;
+        Object.keys(data).forEach((u) => {
+            const user = document.createElement('p');
+            if (!data[u].name) return;
+            user.style.color = data[u].isOnline ? 'green' : 'red';
+            user.textContent = data[u].name;
+            userContainer.append(user);
+        })
+
+    })
     const input = document.getElementById('input');
 
 
