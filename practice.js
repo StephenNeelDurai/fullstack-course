@@ -19,6 +19,7 @@
 // Get product in the input
 // Validation
 // Store
+
 const products = [];
 
 function addProduct(product) {
@@ -28,6 +29,7 @@ function addProduct(product) {
     //Id, Name, Price, Quantity/Weight, Type, Color, Size, Image
     // Required
     // Optional Image
+
     if (
       product.id &&
       product.name &&
