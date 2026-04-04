@@ -4,6 +4,8 @@ const app = express(); // server
 const PORT = 4000;
 const http = require("http");
 const { Server } = require("socket.io");
+const mysql = require("mysql2/promise");
+let connection = null; // db connection variable
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -63,7 +65,23 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
+  try {
+    // create the connection to database
+    console.log("\n Trying to connect db...");
+    connection = await mysql.createConnection({
+      host: "localhost", // 127.0.0.1 // 0.0.0.0 //
+      user: "root",
+      database: "future_stack",
+      password: "Bingo@123",
+    });
+
+    console.log("\n DB Connection success");
+  } catch (err) {
+    console.log("\n ***************************");
+    console.log("DB Connection Issue: ", err);
+    console.log("\n ***************************");
+  }
   console.log("Server Running on PORT", PORT);
 });
 //shalin ,10 minutes ago done
@@ -78,6 +96,25 @@ let users = [
   { id: 5, place: "UAE", section: "A", name: "Manasiga" },
   { id: 6, place: "SPAIN", section: "A", name: "Mega" },
 ];
+
+// mysql postgres
+// Database:  FS
+// TABLE:  Students
+//  id (primary key) | name (not null) | age | place  | phone | email
+// ----------------------------------------------------
+//  1| null | 21 | null  | 9876543210 | test@email.com ❌
+//  2| A. Vidhya | 21 | Alm  | 9876543210 | test@email.com
+//  3| A. Vidhya | 21 | Alm  | 9876543210 | test@email.com ❌
+//  Vidhya | 21 | Alm  | 9876543210 | test1@email.com
+// 1. program stop = []
+// 2.  program running = [1,2,3,4]
+// 3. program stop = []
+
+// mongodb {}
+// TABLE:  Students
+//{ id: 1, place: "UAE", section: "A", name: "Merciyal",x: "" },
+// { id: 1, place: "UAE", section: "A", name: "Merciyal",y: "",z:"" },
+
 // GET / Render to the home page 2
 app.get("/", (req, res) => {
   console.log("\n GET /");
@@ -88,9 +125,13 @@ app.get("/", (req, res) => {
 });
 
 // GET /profile
-app.get("/profile", (req, res) => {
+app.get("/profile", async (req, res) => {
   console.log("\n GET /profile");
-  res.send(users); // send data
+  const [dbUsers] = await connection.execute(
+    "SELECT UserId as id,FirstName as name FROM `Users`",
+  ); //[result,fields]
+
+  res.send({ records: dbUsers, count: dbUsers.length }); // send data
 });
 
 // POST
