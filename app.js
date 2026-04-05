@@ -66,11 +66,13 @@ io.on("connection", (socket) => {
 });
 
 server.listen(PORT, async () => {
+  console.log("Server Running on PORT", PORT);
   try {
     // create the connection to database
     console.log("\n Trying to connect db...");
     connection = await mysql.createConnection({
       host: "localhost", // 127.0.0.1 // 0.0.0.0 //
+      port: 3306,
       user: "root",
       database: "future_stack",
       password: "Bingo@123",
@@ -82,10 +84,10 @@ server.listen(PORT, async () => {
     console.log("DB Connection Issue: ", err);
     console.log("\n ***************************");
   }
-  console.log("Server Running on PORT", PORT);
 });
 //shalin ,10 minutes ago done
 let users = [
+  // in memory RAM
   // array.find -> first matching value (single)
   // array.filter ->  matching all value ([])
   // Array of users
@@ -100,12 +102,12 @@ let users = [
 // mysql postgres
 // Database:  FS
 // TABLE:  Students
-//  id (primary key) | name (not null) | age | place  | phone | email
+//  id (primary key) | name (not null) | age | place  | phone | email | newField
 // ----------------------------------------------------
-//  1| null | 21 | null  | 9876543210 | test@email.com ❌
-//  2| A. Vidhya | 21 | Alm  | 9876543210 | test@email.com
-//  3| A. Vidhya | 21 | Alm  | 9876543210 | test@email.com ❌
-//  Vidhya | 21 | Alm  | 9876543210 | test1@email.com
+//  1| null | 21 | null  | 9876543210 | test@email.com ❌ | null
+//  2| A. Vidhya | 21 | Alm  | 9876543210 | test@email.com | null
+//  3| A. Vidhya | 21 | Alm  | 9876543210 | test@email.com ❌ | null
+//  Vidhya | 21 | Alm  | 9876543210 | test1@email.com | null
 // 1. program stop = []
 // 2.  program running = [1,2,3,4]
 // 3. program stop = []
@@ -128,7 +130,9 @@ app.get("/", (req, res) => {
 app.get("/profile", async (req, res) => {
   console.log("\n GET /profile");
   const [dbUsers] = await connection.execute(
-    "SELECT UserId as id,FirstName as name FROM `Users`",
+    // [result, fields]
+    // raw
+    "SELECT id, student_name as name, bus_number as b_number, created_at, updated_at FROM students",
   ); //[result,fields]
 
   res.send({ records: dbUsers, count: dbUsers.length }); // send data
